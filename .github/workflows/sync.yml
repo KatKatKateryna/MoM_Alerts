@@ -5,7 +5,8 @@ name: Sync from Blu-H/MoM_Alerts
 
 on:
   schedule:
-    - cron: "15 * * * *"
+    # daily at 19:00 UTC
+    - cron: "0 19 * * *"
   workflow_dispatch:
 
 permissions:
