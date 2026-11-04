@@ -1,0 +1,30 @@
+# Copies the main and stats branches of Blu-H/MoM_Alerts (the source of truth)
+# into this repository, overwriting them here. This workflow lives on the
+# default branch "sync", which the copy never touches.
+name: Sync from Blu-H/MoM_Alerts
+
+on:
+  schedule:
+    - cron: "15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Copy main and stats
+        env:
+          SOURCE: https://github.com/Blu-H/MoM_Alerts.git
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git init -q --bare mirror.git
+          cd mirror.git
+          git fetch --no-tags "$SOURCE" "+refs/heads/main:refs/heads/main" "+refs/heads/stats:refs/heads/stats"
+          git push --force "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" main stats
